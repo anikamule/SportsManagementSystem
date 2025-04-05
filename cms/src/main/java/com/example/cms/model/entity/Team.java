@@ -38,7 +38,7 @@ public class Team {
     // CONNECT CAPTAIN TO TEAM
     @Nullable
     @OneToOne
-    @JoinColumn(name = "captainID") // Foreign key reference to the captain
+    @JoinColumn(name = "captainID", nullable = true) // Foreign key reference to the captain
     @JsonManagedReference("team-captain") // Add a name to distinguish different relationships
     private Captain captain;
 

@@ -18,7 +18,7 @@ import javax.validation.constraints.NotEmpty;
 public abstract class User {
 
     @Id
-    private String userID;
+    private Long userID;
 
     @NotEmpty
     private String firstName;
@@ -36,8 +36,4 @@ public abstract class User {
     @NotEmpty
     private String role;
     // Need to add a constraint so that the role must be player, captain, referee, or admin
-
-    public String getUserID() {
-        return userID;
-    }
 }

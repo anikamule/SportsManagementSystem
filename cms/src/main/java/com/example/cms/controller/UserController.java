@@ -74,7 +74,6 @@ public class UserController {
     // registration
     @PostMapping("/users/create")
     public ResponseEntity<String> createUser(
-//            @RequestParam String userID,
             @RequestParam String firstName,
             @RequestParam String lastName,
             @RequestParam String email,
@@ -83,13 +82,11 @@ public class UserController {
             String role = "player"; // default is player
 
             // Generate the next available user ID
-            Integer maxUserID = playerRepository.findMaxUserID();
-            Integer nextUserID = (maxUserID != null) ? maxUserID + 1 : 1;
-            String userID = nextUserID.toString(); // Store as a numeric string
-
+            Long maxUserID = playerRepository.findMaxUserID();
+            Long nextUserID = (maxUserID != null) ? maxUserID + 1 : 1L;
 
             Player player = new Player();
-            player.setUserID(userID);
+            player.setUserID(nextUserID);
             player.setFirstName(firstName);
             player.setLastName(lastName);
             player.setEmail(email);
@@ -102,6 +99,4 @@ public class UserController {
             return ResponseEntity.status(500).body("Error creating user: " + e.getMessage());
         }
     }
-
 }
-

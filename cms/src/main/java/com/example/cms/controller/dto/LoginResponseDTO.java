@@ -2,14 +2,14 @@ package com.example.cms.controller.dto;
 
 public class LoginResponseDTO {
 
-    private String userID;
+    private Long userID;
     private String firstName;
     private String lastName;
     private String email;
     private String role;
 
     // Constructor
-    public LoginResponseDTO(String userID, String firstName, String lastName, String email, String role) {
+    public LoginResponseDTO(Long userID, String firstName, String lastName, String email, String role) {
         this.userID = userID;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -18,11 +18,11 @@ public class LoginResponseDTO {
     }
 
     // Getters and Setters
-    public String getUserID() {
+    public Long getUserID() {
         return userID;
     }
 
-    public void setUserID(String userID) {
+    public void setUserID(Long userID) {
         this.userID = userID;
     }
 

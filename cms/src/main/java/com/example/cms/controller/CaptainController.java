@@ -22,7 +22,6 @@ public class CaptainController {
     private PlayerRepository playerRepository;
 
     public CaptainController(CaptainRepository captainRepository, PlayerRepository playerRepository) {
-
         this.captainRepository = captainRepository;
         this.playerRepository = playerRepository;
     }
@@ -35,7 +34,7 @@ public class CaptainController {
 
     // RETRIEVE CAPTAIN
     @GetMapping("/{captainId}")
-    Captain retreiveCaptain(@PathVariable("captainId") String userID) {
+    Captain retrieveCaptain(@PathVariable("captainId") Long userID) {
         return captainRepository.findById(userID)
                 .orElseThrow(() -> new CaptainNotFoundException(userID));
     }
@@ -43,33 +42,16 @@ public class CaptainController {
     // ADD PLAYER TO TEAM
     @PostMapping("/{captainId}/addPlayer/{playerId}")
     @Transactional
-    public void addPlayerToTeam(@PathVariable String captainId, @PathVariable String playerId) {
+    public void addPlayerToTeam(@PathVariable Long captainId, @PathVariable Long playerId) {
         captainRepository.addPlayerToTeam(captainId, playerId);
     }
 
-    // REMOVE PLAYER TO TEAM
-//    @DeleteMapping("/{captainId}/removePlayer/{playerId}")
-//    @Transactional
-//    public void removePlayerFromTeam(@PathVariable String captainId, @PathVariable String playerId) {
-//        captainRepository.removePlayerFromTeam(captainId, playerId);
-//    }
-
-//    @DeleteMapping("/removePlayer/{playerId}")
-//    @Transactional
-//    public ResponseEntity<String> removePlayer(@PathVariable String playerId) {
-//        int updated = captainRepository.removePlayerFromTeam(playerId);
-//        if (updated > 0) {
-//            return ResponseEntity.ok("Player removed successfully!!");
-//        } else {
-//            return ResponseEntity.status(404).body("Player not found.");
-//        }
-//    }
-
+    // REMOVE PLAYER FROM TEAM
     @DeleteMapping("/removePlayer/{playerId}")
     @Transactional
-    public ResponseEntity<String> removePlayer(@PathVariable String playerId) {
+    public ResponseEntity<String> removePlayer(@PathVariable Long playerId) {
         int updated = captainRepository.removePlayerFromTeam(playerId);
-        System.out.println("Rows affected: " + updated);  // <---- Add this
+        System.out.println("Rows affected: " + updated);
         if (updated > 0) {
             return ResponseEntity.ok("Player removed successfully!!");
         } else {
@@ -77,9 +59,10 @@ public class CaptainController {
         }
     }
 
+    // DELETE PLAYER
     @DeleteMapping("/deletePlayer/{playerId}")
     @Transactional
-    public ResponseEntity<String> deletePlayer(@PathVariable String playerId) {
+    public ResponseEntity<String> deletePlayer(@PathVariable Long playerId) {
         boolean exists = playerRepository.existsById(playerId);
         if (!exists) {
             return ResponseEntity.status(404).body("Player not found.");
@@ -89,23 +72,20 @@ public class CaptainController {
         return ResponseEntity.ok("Player deleted successfully!");
     }
 
-
-
-
     // CREATE A PLAYER
     @PostMapping("/createPlayer")
     @Transactional
     public Player createPlayerForCaptain(@RequestBody Player player) {
         // Extract captain ID from security context or session (depending on how auth is set up)
         // For now, if it's hardcoded or test-based:
-        String captainId = "1"; // replace with real logic later
+        Long captainId = 1L; // replace with real logic later
 
-        Captain captain = captainRepository.findById((captainId))
+        Captain captain = captainRepository.findById(captainId)
                 .orElseThrow(() -> new CaptainNotFoundException(captainId));
 
         Player savedPlayer = playerRepository.save(player);
 
-        captainRepository.addPlayerToTeam(String.valueOf(captainId), savedPlayer.getUserID());
+        captainRepository.addPlayerToTeam(captainId, savedPlayer.getUserID());
 
         return savedPlayer;
     }

@@ -20,7 +20,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @RequestMapping("/admin")
-class AdminController {
+public class AdminController {
 
     @Autowired
     private final AdminRepository adminRepository;
@@ -69,7 +69,7 @@ class AdminController {
     @PostMapping("/team")
     String createTeam(@RequestParam String teamID,
                       @RequestParam String teamName,
-                      @RequestParam String captainID,
+                      @RequestParam(required = false) String captainID,
                       @RequestParam String leagueID) {
         try {
             adminRepository.createTeam(teamID, teamName, captainID, leagueID);
@@ -227,7 +227,7 @@ class AdminController {
     // Delete referee
     @DeleteMapping("/deleteReferee/{refereeId}")
     @Transactional
-    public ResponseEntity<String> deleteReferee(@PathVariable String refereeId) {
+    public ResponseEntity<String> deleteReferee(@PathVariable Long refereeId) {
         boolean exists = refereeRepository.existsById(refereeId);
         if (!exists) {
             return ResponseEntity.status(404).body("Referee not found.");
@@ -240,7 +240,7 @@ class AdminController {
     // Delete captain
     @DeleteMapping("/deleteCaptain/{captainId}")
     @Transactional
-    public ResponseEntity<String> deleteCaptain(@PathVariable String captainId) {
+    public ResponseEntity<String> deleteCaptain(@PathVariable Long captainId) {
         boolean exists = captainRepository.existsById(captainId);
         if (!exists) {
             return ResponseEntity.status(404).body("Captain not found.");
