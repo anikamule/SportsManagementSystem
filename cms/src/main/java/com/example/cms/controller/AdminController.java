@@ -212,12 +212,30 @@ public class AdminController {
     }
 
     // NEW DELETE LEAGUE
+//    @DeleteMapping("/league/{leagueId}")
+//    public String deleteLeague(@PathVariable String leagueId) {
+//        try {
+//            adminRepository.deleteGamesByLeagueId(leagueId);  // Step 1: delete games
+//            adminRepository.deleteTeamsByLeagueId(leagueId);  // Step 2: delete teams
+//            adminRepository.deleteLeague(leagueId);           // Step 3: delete league
+//            return "League, its games, and teams deleted successfully.";
+//        } catch (Exception e) {
+//            return "Error deleting league: " + e.getMessage();
+//        }
+//    }
     @DeleteMapping("/league/{leagueId}")
     public String deleteLeague(@PathVariable String leagueId) {
         try {
-            adminRepository.deleteGamesByLeagueId(leagueId);  // Step 1: delete games
-            adminRepository.deleteTeamsByLeagueId(leagueId);  // Step 2: delete teams
-            adminRepository.deleteLeague(leagueId);           // Step 3: delete league
+            // Delete all related games — BOTH ways
+            adminRepository.deleteGamesByTeamsInLeague(leagueId);
+            adminRepository.deleteGamesByLeagueId(leagueId);
+
+            // Then delete teams
+            adminRepository.deleteTeamsByLeagueId(leagueId);
+
+            // Then delete league
+            adminRepository.deleteLeague(leagueId);
+
             return "League, its games, and teams deleted successfully.";
         } catch (Exception e) {
             return "Error deleting league: " + e.getMessage();
@@ -238,6 +256,17 @@ public class AdminController {
     }
 
     // Delete captain
+//    @DeleteMapping("/deleteCaptain/{captainId}")
+//    @Transactional
+//    public ResponseEntity<String> deleteCaptain(@PathVariable Long captainId) {
+//        boolean exists = captainRepository.existsById(captainId);
+//        if (!exists) {
+//            return ResponseEntity.status(404).body("Captain not found.");
+//        }
+//
+//        captainRepository.deleteById(captainId);
+//        return ResponseEntity.ok("Captain deleted successfully!");
+//    }
     @DeleteMapping("/deleteCaptain/{captainId}")
     @Transactional
     public ResponseEntity<String> deleteCaptain(@PathVariable Long captainId) {
@@ -246,12 +275,30 @@ public class AdminController {
             return ResponseEntity.status(404).body("Captain not found.");
         }
 
+        // Unlink captain from all teams first
+        adminRepository.removeCaptainFromAllTeams(captainId);
+
+        // Now it's safe to delete
         captainRepository.deleteById(captainId);
         return ResponseEntity.ok("Captain deleted successfully!");
     }
 
-
-
+    // Create a Referee:
+    @PostMapping("/referee")
+    public String createReferee(@RequestParam String userID,
+                                @RequestParam String firstName,
+                                @RequestParam String lastName,
+                                @RequestParam String email,
+                                @RequestParam String role,
+                                @RequestParam String password) {   // ✅ add password
+        try {
+            // Save referee
+            adminRepository.createReferee(userID, firstName, lastName, email, role, password);
+            return "Referee created successfully.";
+        } catch (Exception e) {
+            return "Error creating referee: " + e.getMessage();
+        }
+    }
 
 
 }

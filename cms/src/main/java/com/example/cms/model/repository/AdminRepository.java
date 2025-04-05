@@ -129,8 +129,14 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
     // NEW DELETE FOR LEAGUES
     @Modifying
     @Transactional
-    @Query("DELETE FROM Game g WHERE g.league.leagueID = :leagueId")
-    void deleteGamesByLeagueId(@Param("leagueId") String leagueId);
+    @Query(value = "DELETE FROM games WHERE team1ID IN (SELECT teamID FROM teams WHERE leagueID = :leagueID) OR team2ID IN (SELECT teamID FROM teams WHERE leagueID = :leagueID)", nativeQuery = true)
+    void deleteGamesByTeamsInLeague(@Param("leagueID") String leagueID);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM games WHERE leagueID = :leagueID", nativeQuery = true)
+    void deleteGamesByLeagueId(@Param("leagueID") String leagueID);
+
 
     @Modifying
     @Transactional
@@ -138,5 +144,28 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
     void deleteTeamsByLeagueId(@Param("leagueID") String leagueId);
 
     Admin findByEmailAndPassword(String email, String password);
+
+
+
+    // NEW Delete Captain from All Teams
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE teams SET captainID = NULL WHERE captainID = :captainID", nativeQuery = true)
+    void removeCaptainFromAllTeams(@Param("captainID") Long captainID);
+
+    // Create Referee
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO referees (userID, firstName, lastName, email, role, password) " +
+            "VALUES (:userID, :firstName, :lastName, :email, :role, :password)", nativeQuery = true)
+    void createReferee(
+            @Param("userID") String userID,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("email") String email,
+            @Param("role") String role,
+            @Param("password") String password);
+
+
 
 }
